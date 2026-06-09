@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Cria tabela do tipo de contas e cartões
      */
     public function up(): void
     {
-        //Cria tabela do tipo de contas e cartões
-        Schema::create('accounts_types', function(Blueprint $table){
-            $table->id();
+        Schema::create('account_types', function(Blueprint $table){
+            $table->tinyIncrements('id');
             $table->string('name');
 
+            $table->timestamps();
             $table->softDeletes();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('types_accounts');
+        Schema::dropIfExists('account_types');
     }
 };
