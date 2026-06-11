@@ -1,12 +1,19 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccountCard extends Model
 {
+    use SoftDeletes;
+
+    // Centraliza o ID que representa o tipo "Cartão de Crédito" no banco de dados
+    const TYPE_CREDIT_CARD = 2;
+
     protected $table = 'account_cards';
 
     protected $fillable = [
