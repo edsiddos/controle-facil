@@ -24,7 +24,7 @@ class AccountCardController extends Controller
 
     /**
      * Exibe a listagem de contas e cartões do administrador.
-     * * @param Request $request Objeto contendo os dados da requisição HTTP.
+     * @param Request $request Objeto contendo os dados da requisição HTTP.
      * @return Response Renderização da view via Inertia.js.
      */
     public function index(Request $request): Response
@@ -33,18 +33,46 @@ class AccountCardController extends Controller
         $userId = $request->user()->id;
 
         // Renderiza o componente Vue/React em 'resources/js/Pages/Admin/AccountCard'
-        return Inertia::render('Admin/AccountCard', [
-            // Busca as contas associadas ao usuário através da camada de serviço
-            'accounts' => $this->service->listAccounts($userId),
+        return Inertia::render('Admin/AccountCard/Index', [
+            'accounts' => $this->service->listAccounts($userId), // Busca as contas associadas ao usuário através da camada de serviço
+            'accountTypes' => AccountType::all(['id', 'name']),  // Retorna apenas as colunas necessárias dos tipos de conta para otimizar o payload
+            'typeCreditCard' => AccountCard::TYPE_CREDIT_CARD    // Busca o tipo correspondente a cartão de crédito
+        ]);
+    }
 
-            // Retorna apenas as colunas necessárias dos tipos de conta para otimizar o payload
-            'accountTypes' => AccountType::all(['id', 'name'])
+    /**
+     * Exemplo de endpoint para alimentar a WebTable dinamicamente.
+     */
+    public function webTable(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        // Captura os parâmetros da URL/Request com valores padrão de segurança
+        $limit  = $request->query('limit', 10);    // Padrão: 10 registros por página
+        $offset = $request->query('offset', 0);    // Padrão: Começa do início
+        $search = $request->query('search');       // nulo se não enviado
+
+        // Chama o método estruturado no Service
+        $result = $this->service->listWebTable($userId, (int)$limit, (int)$offset, $search);
+
+        // Retorna como JSON para sua tabela reativa no Vue/React
+        return response()->json($result);
+    }
+
+    /**
+     * Exibe a tela de criação de uma nova conta/cartão.
+     */
+    public function create(): Response
+    {
+        return Inertia::render('Admin/AccountCard/Create', [
+            'accountTypes' => AccountType::all(['id', 'name']),
+            'typeCreditCard' => AccountCard::TYPE_CREDIT_CARD
         ]);
     }
 
     /**
      * Cadastra uma nova conta ou cartão no sistema.
-     * * @param StoreAccountCardRequest $request Request customizado que valida os dados de entrada.
+     * @param StoreAccountCardRequest $request Request customizado que valida os dados de entrada.
      * @return RedirectResponse Redirecionamento HTTP com mensagem de sucesso.
      */
     public function store(StoreAccountCardRequest $request): RedirectResponse
@@ -62,8 +90,47 @@ class AccountCardController extends Controller
     }
 
     /**
+     * Exibe a tela de edição de uma conta/cartão existente.
+     * @param Request $request Objeto da requisição.
+     * @param AccountCard $accountCard Uso de Route Model Binding: o Laravel busca o model no banco automaticamente usando o ID da URL.
+     * @return RedirectResponse Redirecionamento HTTP com feedback de sucesso ou erro.
+     */
+    public function edit(Request $request, AccountCard $accountCard): Response
+    {
+        // Garante que o usuário só edite o que for dele
+        if ($accountCard->user_id !== $request->user()->id) {
+            abort(403, 'Acesso não autorizado.');
+        }
+
+        return Inertia::render('Admin/AccountCard/Edit', [
+            'account' => $accountCard,
+            'accountTypes' => AccountType::all(['id', 'name']),
+            'typeCreditCard' => AccountCard::TYPE_CREDIT_CARD
+        ]);
+    }
+
+    /**
+     * Atualiza os dados da conta/cartão.
+     * @param StoreAccountCardRequest $request Objeto da requisição.
+     * @param AccountCard $accountCard Uso de Route Model Binding: o Laravel busca o model no banco automaticamente usando o ID da URL.
+     * @return RedirectResponse Redirecionamento HTTP com feedback de sucesso ou erro.
+     */
+    public function update(StoreAccountCardRequest $request, AccountCard $accountCard): RedirectResponse
+    {
+        if ($accountCard->user_id !== $request->user()->id) {
+            abort(403, 'Acesso não autorizado.');
+        }
+
+        $this->service->updateAccount($accountCard->id, $request->user()->id, $request->validated());
+
+        return redirect()
+            ->route('accounts.index')
+            ->with('success', 'Cartão/Conta atualizado com sucesso!');
+    }
+
+    /**
      * Remove uma conta ou cartão específico.
-     * * @param Request $request Objeto da requisição.
+     * @param Request $request Objeto da requisição.
      * @param AccountCard $accountCard Uso de Route Model Binding: o Laravel busca o model no banco automaticamente usando o ID da URL.
      * @return RedirectResponse Redirecionamento HTTP com feedback de sucesso ou erro.
      */
