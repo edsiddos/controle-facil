@@ -67,7 +67,7 @@ const submit = () => {
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required />
                             </div>
 
-                            <div v-if="form.account_type_id == type_credit_card">
+                            <div v-if="form.account_type_id == typeCreditCard">
                                 <label class="block text-sm font-medium text-gray-700">Limite de Crédito</label>
                                 <input v-model="form.credit_limit" type="number" step="0.01"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
