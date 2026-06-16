@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
 
     // Rota específica para alimentar a tabela via AJAX/JSON
     Route::get('accounts/web-table', [AccountCardController::class, 'webTable'])->name('accounts.web-table');
-    Route::resource('accounts', AccountCardController::class);
+    Route::resource('accounts', AccountCardController::class)->parameters(['accounts' => 'accountCard']);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
