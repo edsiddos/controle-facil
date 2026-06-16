@@ -25,17 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rota para listar e exibir a interface em Vue.js
-    Route::get('/accounts', [AccountCardController::class, 'index'])
-        ->name('accounts.index');
-
-    // Rota para submeter o formulário de criação (POST)
-    Route::post('/accounts', [AccountCardController::class, 'store'])
-        ->name('accounts.store');
-
-    // Rota para eliminar um registo específico (DELETE)
-    Route::delete('/accounts/{id}', [AccountCardController::class, 'destroy'])
-        ->name('accounts.destroy');
+    // Rota específica para alimentar a tabela via AJAX/JSON
+    Route::get('accounts/web-table', [AccountCardController::class, 'webTable'])->name('accounts.web-table');
+    Route::resource('accounts', AccountCardController::class);
 });
 
 require __DIR__.'/auth.php';
