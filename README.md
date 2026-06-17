@@ -1,5 +1,7 @@
 # 💰 ControleFácil
 
+![Contador de Acessos](https://komarev.com/ghpvc/?username=edsiddos&repo=controle-facil&color=orange&style=flat-square)
+
 O **ControleFácil** é uma aplicação web moderna voltada para a gestão e controle de gastos pessoais. O grande diferencial do sistema é a inteligência e flexibilidade para a inserção e projeção de compras parceladas, permitindo uma visão clara do fluxo financeiro futuro.
 
 ---
