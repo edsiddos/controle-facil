@@ -116,26 +116,15 @@ class AccountCardService
      */
     public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array
     {
-        // Inicia a query filtrando estritamente pelo usuário logado
-        $query = AccountCard::where('user_id', $userId)
-            ->with('accountType'); // Carrega o relacionamento do tipo da conta
+        // valida o menor valor aceito para limit e offset
+        if ($limit < 1) {
+            $limit = 1;
+        }
 
-        // Aplica o filtro de busca condicionalmente se o 'search' foi preenchido
-        $query->when($search, function ($q) use ($search) {
-            return $q->where('name', 'like', '%' . $search . '%');
-        });
+        if ($offset < 0) {
+            $offset = 0;
+        }
 
-        // Conta o total de registros que correspondem aos filtros (essencial para o front-end calcular as páginas)
-        $total = $query->count();
-
-        // Aplica a paginação (Limit/Offset) e busca os resultados
-        $data = $query->skip($offset)
-            ->take($limit)
-            ->get();
-
-        return [
-            'data' => $data,
-            'total' => $total,
-        ];
+        return $this->repository->listWebTable($userId, $limit, $offset, $search);
     }
 }

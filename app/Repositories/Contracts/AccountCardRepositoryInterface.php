@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories\Contracts;
 
 use App\Models\AccountCard;
@@ -11,4 +12,5 @@ interface AccountCardRepositoryInterface
     public function create(array $data): AccountCard;
     public function update(AccountCard $accountCard, array $data): bool;
     public function delete(AccountCard $accountCard): bool;
+    public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array;
 }

@@ -73,4 +73,38 @@ class AccountCardRepository implements AccountCardRepositoryInterface
     {
         return $accountCard->delete();
     }
+
+    /**
+     * Lista as contas/cartões com paginação e busca para uma estrutura de WebTable.
+     *
+     * @param int $userId ID do usuário dono das contas.
+     * @param int $limit Quantidade de registros a retornar.
+     * @param int $offset Quantidade de registros a pular.
+     * @param string|null $search Termo de busca opcional (busca por nome).
+     * @return array contendo os registros e o total para controle da paginação no front-end.
+     */
+    public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array
+    {
+        // Inicia a query filtrando estritamente pelo usuário logado
+        $query = AccountCard::forUser($userId)
+            ->with('accountType'); // Carrega o relacionamento do tipo da conta
+
+        // Aplica o filtro de busca condicionalmente se o 'search' foi preenchido
+        $query->when($search, function ($q) use ($search) {
+            return $q->where('name', 'like', '%' . $search . '%');
+        });
+
+        // Conta o total de registros que correspondem aos filtros (essencial para o front-end calcular as páginas)
+        $total = $query->count();
+
+        // Aplica a paginação (Limit/Offset) e busca os resultados
+        $data = $query->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return [
+            'data' => $data,
+            'total' => $total,
+        ];
+    }
 }
