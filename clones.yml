@@ -2,7 +2,7 @@ name: GitHub Clones Counter
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Roda uma vez por dia
+    - cron: '* * * * *' # Roda uma vez por dia
   workflow_dispatch: # Permite rodar manualmente
 
 jobs:
