@@ -1,0 +1,227 @@
+/* ==========================================================================
+   1. VARIÁVEIS GLOBAIS (TEMA CLARO)
+   ========================================================================== */
+:root {
+    /* Cores de Fundo */
+    --bg-primary: #f8fafc;       /* Fundo principal da página (Cinza bem claro) */
+    --bg-surface: #ffffff;       /* Fundo de cards, containers e inputs */
+    --bg-sidebar: #f1f5f9;       /* Fundo do menu lateral / áreas de destaque */
+
+    /* Cores de Marca & Destaques */
+    --color-primary: #2563eb;     /* Azul principal (Botões, links importantes) */
+    --color-primary-hover: #1d4ed8;
+    --color-success: #16a34a;     /* Verde para saldos positivos, entradas */
+    --color-success-bg: #dcfce7;  /* Fundo verde claro para alertas/badges */
+    --color-danger: #dc2626;      /* Vermelho para despesas, alertas */
+    --color-danger-bg: #fee2e2;   /* Fundo vermelho claro */
+    --color-warning: #ea580c;     /* Laranja para o banner "Em Desenvolvimento" */
+    --color-warning-bg: #ffedd5;
+
+    /* Cores de Texto */
+    --text-main: #1e293b;        /* Texto principal (quase preto para alto contraste) */
+    --text-muted: #64748b;       /* Texto secundário / legendas */
+    --text-on-shared: #ffffff;   /* Texto dentro de botões coloridos */
+
+    /* Bordas e Sombras */
+    --border-color: #e2e8f0;      /* Linhas divisórias e bordas de inputs */
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    
+    /* Transições */
+    --transition-fast: all 0.2s ease;
+}
+
+/* ==========================================================================
+   2. ESTILOS GLOBAIS & RESETS
+   ========================================================================== */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition-fast);
+}
+
+/* Links globais */
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+a:hover {
+    color: var(--color-primary-hover);
+}
+
+/* ==========================================================================
+   3. BANNER "EM DESENVOLVIMENTO" (Página Inicial e Telas de Acesso)
+   ========================================================================== */
+.banner-dev {
+    background-color: var(--color-warning-bg);
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    color: var(--color-warning);
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   4. TELAS DE AUTENTICAÇÃO (Login, Registro, Recuperação de Senha)
+   ========================================================================== */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+}
+
+.auth-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Inputs de Formulário */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    transition: var(--transition-fast);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Botões da Autenticação */
+.btn-auth-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-primary);
+    color: var(--text-on-shared);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-auth-submit:hover {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   5. DASHBOARD (Área Logada)
+   ========================================================================== */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+    width: 260px;
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+    padding: 24px;
+}
+
+/* Cards Financeiros */
+.finance-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
+}
+
+.finance-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Estados de Saldo (Verde para positivo, Vermelho para negativo) */
+.balance-positive {
+    color: var(--color-success);
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.balance-negative {
+    color: var(--color-danger);
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+/* Badges / Tags de Transações */
+.badge-entry {
+    background-color: var(--color-success-bg);
+    color: var(--color-success);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-expense {
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Tabelas de Extrato */
+.table-finance {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-finance th {
+    background-color: var(--bg-sidebar);
+    color: var(--text-muted);
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table-finance td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.table-finance tr:hover td {
+    background-color: rgba(241, 245, 249, 0.5); /* Efeito hover suave na linha */
+}
