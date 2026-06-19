@@ -15,13 +15,20 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <nav class="space-y-1">
-                    <Link :href="route('dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-600 bg-blue-50 border border-blue-100">
+                    <Link :href="route('dashboard')"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-600 bg-blue-50 border border-blue-100">
                         <span>🏠</span> Visão Geral
                     </Link>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <Link :href="route('accounts.index')"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
                         <span>💳</span> Contas & Cartões
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+                    </Link>
+                    <Link :href="route('categories.index')"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
+                        <span>🗂️</span> Categorias
+                    </Link>
+                    <a href="#"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
                         <span>📉</span> Despesas Fixas
                     </a>
                 </nav>
@@ -32,7 +39,8 @@ const showingNavigationDropdown = ref(false);
                     <p class="text-sm font-semibold text-gray-800">{{ $page.props.auth.user.name }}</p>
                     <p class="text-xs text-gray-500 truncate">{{ $page.props.auth.user.email }}</p>
                 </div>
-                <Link :href="route('logout')" method="post" as="button" class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition">
+                <Link :href="route('logout')" method="post" as="button"
+                    class="w-full text-left flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition">
                     <span>🚪</span> Sair do Sistema
                 </Link>
             </div>
@@ -43,10 +51,15 @@ const showingNavigationDropdown = ref(false);
                 <div>
                     <slot name="header-title" />
                 </div>
-                <span class="bg-amber-100 text-amber-800 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold">
+                <span
+                    class="bg-amber-100 text-amber-800 border border-amber-200 px-3 py-1 rounded-full text-xs font-semibold">
                     MVP v1.0
                 </span>
             </header>
+
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <slot name="toolbar" />
+            </div>
 
             <slot />
         </main>

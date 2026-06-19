@@ -1,7 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import InputError from '@/Components/InputError.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { watch } from 'vue';
+import SelectInput from '@/Components/SelectInput.vue';
 
 const props = defineProps({
     accountTypes: Array,
@@ -31,7 +33,7 @@ const submit = () => {
     <Head title="Nova Conta / Cartão" />
 
     <AuthenticatedLayout>
-        <template #header>
+        <template #header-title>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Adicionar Nova Conta / Cartão</h2>
         </template>
 
@@ -45,29 +47,29 @@ const submit = () => {
                                 <label class="block text-sm font-medium text-gray-700">Nome</label>
                                 <input v-model="form.name" type="text"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required />
+                                <InputError class="mt-2" :message="form.errors.name" />
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Tipo</label>
-                                <select v-model="form.account_type_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                    <option value="" disabled>Selecione...</option>
-                                    <option v-for="type in accountTypes" :key="type.id" :value="type.id">
-                                        {{ type.name }}
-                                    </option>
-                                </select>
+                                <SelectInput v-model="form.account_type_id" :options="accountTypes" :cl_label="'name'"
+                                    :cl_value="'id'" />
+                                <InputError class="mt-2" :message="form.errors.account_type_id" />
                             </div>
+
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Saldo Atual / Inicial</label>
                                 <input v-model="form.balance" type="number" step="0.01"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required />
+                                <InputError class="mt-2" :message="form.errors.balance" />
                             </div>
 
                             <div v-if="form.account_type_id == typeCreditCard">
                                 <label class="block text-sm font-medium text-gray-700">Limite de Crédito</label>
                                 <input v-model="form.credit_limit" type="number" step="0.01"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                                <InputError class="mt-2" :message="form.errors.credit_limit" />
                             </div>
                         </div>
 

@@ -28,7 +28,7 @@ const deleteAccount = () => {
         onSuccess: () => {
             closeModal();
             // Recarrega os dados internamente no WebTable sem recarregar a página
-            tableRef.value.searchData(); 
+            tableRef.value.searchData();
         }
     });
 };
@@ -39,31 +39,29 @@ const closeModal = () => {
 </script>
 
 <template>
+
     <Head title="Contas e Cartões" />
 
     <AuthenticatedLayout>
-        <template #header>
+        <template #header-title>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Gerenciamento de Contas e Cartões</h2>
-                <Link :href="route('accounts.create')" class="bg-blue-600 text-white px-4 py-2 rounded shadow text-sm font-medium">
-                    + Novo Cartão / Conta
-                </Link>
             </div>
+        </template>
+
+        <template #toolbar>
+            <Link :href="route('accounts.create')"
+                class="bg-blue-600 text-white px-4 py-2 rounded shadow text-sm font-medium">
+                + Novo Cartão / Conta
+            </Link>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="p-6 bg-white shadow sm:rounded-lg">
-                    
-                    <WebTable 
-                        ref="tableRef"
-                        :headers="tableHeaders" 
-                        :body="tableBodyFields" 
-                        link="accounts.web-table"
-                        :actions="true"
-                        edit-route="accounts.edit"
-                        @delete="openDeleteModal"
-                    />
+
+                    <WebTable ref="tableRef" :headers="tableHeaders" :body="tableBodyFields" link="accounts.web-table"
+                        :actions="true" edit-route="accounts.edit" @delete="openDeleteModal" />
 
                 </div>
             </div>
