@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin;
 use Illuminate\Contracts\Validation\ValidationRule;
 use App\Models\AccountCard;
 use Illuminate\Foundation\Http\FormRequest;
+use Override;
 
 class StoreAccountCardRequest extends FormRequest
 {
@@ -38,6 +39,20 @@ class StoreAccountCardRequest extends FormRequest
             // mas torna-se OBRIGATÓRIO se o 'account_type_id' for igual ao ID de Cartão de Crédito.
             // Usamos a constante mapeada no Model para evitar números mágicos (hardcoding).
             'credit_limit' => 'nullable|numeric|required_if:account_type_id,' . AccountCard::TYPE_CREDIT_CARD,
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Informe o campo nome',
+            'name.string' => 'Verifique o conteúdo informado e tente de novo',
+            'name.max' => 'Nome informado muito longo',
+            'account_type_id.required' => 'Informe um tipo de conta',
+            'account_type_id.exists' => 'Valor selecionado inválido por favor tente novamente',
+            'balance.required' => 'Saldo Inicial deve ser informado.',
+            'credit_limit.numeric' => 'Valor informado inválido',
+            'credit_limit.required_if' => 'Informe este campo quando o tipo for CARTÃO DE CRÉDITO'
         ];
     }
 }
