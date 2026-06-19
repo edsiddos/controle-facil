@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\AccountCardController;
+use App\Http\Controllers\Admin\CategoryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -25,9 +26,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Rota específica para alimentar a tabela via AJAX/JSON
     Route::get('accounts/web-table', [AccountCardController::class, 'webTable'])->name('accounts.web-table');
     Route::resource('accounts', AccountCardController::class)->parameters(['accounts' => 'accountCard']);
+
+    Route::get('categories/web-table', [CategoryController::class, 'webTable'])->name('categories.web-table');
+    Route::resource('categories', CategoryController::class);
 });
 
 require __DIR__ . '/auth.php';
