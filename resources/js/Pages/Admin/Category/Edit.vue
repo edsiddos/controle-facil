@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
+import FormInputs from '@/Pages/Admin/Category/Form.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -9,7 +9,8 @@ const props = defineProps({
 
 const form = useForm({
     name: props.category.name,
-    type: props.category.type
+    type: props.category.type,
+    icon: props.category.icon
 });
 
 const submit = () => {
@@ -30,23 +31,7 @@ const submit = () => {
                 <div class="p-6 bg-white shadow sm:rounded-lg">
                     <form @submit.prevent="submit" class="space-y-6">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Nome da Categoria</label>
-                                <input v-model="form.name" type="text"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required />
-                                <InputError class="mt-2" :message="form.errors.name" />
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Tipo</label>
-                                <select v-model="form.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                                    <option value="D">Despesa</option>
-                                    <option value="R">Receita</option>
-                                </select>
-                                <InputError class="mt-2" :message="form.errors.type" />
-                            </div>
-                        </div>
+                        <FormInputs :form="form" />
 
                         <div class="flex justify-end gap-3">
                             <Link :href="route('categories.index')"

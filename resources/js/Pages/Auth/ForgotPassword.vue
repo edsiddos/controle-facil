@@ -35,7 +35,7 @@ const submit = () => {
                 <div class="form-group mb-6">
                     <label for="email">O seu e-mail de registo</label>
                     <input id="email" type="email" class="form-input" v-model="form.email" required autofocus autocomplete="username" placeholder="exemplo@email.com" />
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    <InputError :message="form.errors.email" />
                 </div>
 
                 <button class="btn-auth-submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

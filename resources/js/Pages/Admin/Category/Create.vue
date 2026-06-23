@@ -1,17 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
-import SelectInput from '@/Components/SelectInput.vue';
+import FormInputs from '@/Pages/Admin/Category/Form.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
-    type: 'D'
+    type: '',
+    icon: ''
 });
-
-const options = [{ value: 'D', label: 'DESPESA' }];
 
 const submit = () => {
     form.post(route('categories.store'));
@@ -32,22 +28,7 @@ const submit = () => {
                 <div class="p-6 bg-white shadow sm:rounded-lg">
                     <form @submit.prevent="submit" class="space-y-6">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <InputLabel>Nome da Categoria</InputLabel>
-                                <TextInput type="text" required v-model="form.name" />
-                                <InputError class="mt-2" :message="form.errors.name" />
-                            </div>
-
-                            <div>
-                                <InputLabel>Tipo</InputLabel>
-                                <SelectInput v-model="form.type" required>
-                                    <option value="D">Despesa</option>
-                                    <option value="R">Receita</option>
-                                </SelectInput>
-                                <InputError class="mt-2" :message="form.errors.type" />
-                            </div>
-                        </div>
+                        <FormInputs :form="form" />
 
                         <div class="flex justify-end gap-3">
                             <Link :href="route('categories.index')"

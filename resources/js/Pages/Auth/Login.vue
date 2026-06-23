@@ -42,7 +42,7 @@ const submit = () => {
                 <div class="form-group">
                     <label for="email">E-mail</label>
                     <input id="email" type="email" class="form-input" v-model="form.email" required autofocus autocomplete="username" />
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="form-group">
@@ -53,7 +53,7 @@ const submit = () => {
                         </Link>
                     </div>
                     <input id="password" type="password" class="form-input" v-model="form.password" required autocomplete="current-password" />
-                    <InputError class="mt-2" :message="form.errors.password" />
+                    <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="block mb-6">

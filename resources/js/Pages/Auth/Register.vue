@@ -34,25 +34,25 @@ const submit = () => {
                 <div class="form-group">
                     <label for="name">Nome Completo</label>
                     <input id="name" type="text" class="form-input" v-model="form.name" required autofocus autocomplete="name" />
-                    <InputError class="mt-2" :message="form.errors.name" />
+                    <InputError :message="form.errors.name" />
                 </div>
 
                 <div class="form-group">
                     <label for="email">E-mail Corporativo ou Pessoal</label>
                     <input id="email" type="email" class="form-input" v-model="form.email" required autocomplete="username" />
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="form-group">
                     <label for="password">Definir Senha</label>
                     <input id="password" type="password" class="form-input" v-model="form.password" required autocomplete="new-password" />
-                    <InputError class="mt-2" :message="form.errors.password" />
+                    <InputError :message="form.errors.password" />
                 </div>
 
                 <div class="form-group mb-6">
                     <label for="password_confirmation">Confirmar Senha</label>
                     <input id="password_confirmation" type="password" class="form-input" v-model="form.password_confirmation" required autocomplete="new-password" />
-                    <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                    <InputError :message="form.errors.password_confirmation" />
                 </div>
 
                 <button class="btn-auth-submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

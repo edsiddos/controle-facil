@@ -7,8 +7,8 @@ import DangerButton from '@/Components/DangerButton.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const tableHeaders = [['Nome', 'Tipo de Movimentação']];
-const tableBodyFields = ['name', 'type'];
+const tableHeaders = [['Nome', 'Tipo de Movimentação', 'Ícone']];
+const tableBodyFields = ['name', 'type', 'icon'];
 
 const tableRef = ref(null);
 const showDeleteModalStatus = ref(false);

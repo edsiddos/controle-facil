@@ -22,11 +22,11 @@ const props = defineProps({
         type: String,
         default: 'Selecione uma opção...'
     },
-    cl_value: {
+    colValue: {
         type: String,
         default: 'value'
     },
-    cl_label: {
+    colLabel: {
         type: String,
         default: 'label'
     }
@@ -41,8 +41,8 @@ const props = defineProps({
                 {{ placeholder }}
             </option>
 
-            <option v-for="option in options" :key="option[cl_value]" :value="option[cl_value]">
-                {{ option[cl_label] }}
+            <option v-for="option in options" :key="option[colValue]" :value="option[colValue]">
+                {{ option[colLabel] }}
             </option>
         </template>
         <slot v-else></slot>
