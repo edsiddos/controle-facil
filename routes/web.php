@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\Admin\AccountCardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\InstallmentPurchaseController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('categories/web-table', [CategoryController::class, 'webTable'])->name('categories.web-table');
     Route::resource('categories', CategoryController::class);
+
+    Route::get('installment-purchases/web-table', [InstallmentPurchaseController::class, 'webTable'])->name('installment-purchases.web-table');
+    Route::resource('installment-purchases', InstallmentPurchaseController::class);
 });
 
 require __DIR__ . '/auth.php';

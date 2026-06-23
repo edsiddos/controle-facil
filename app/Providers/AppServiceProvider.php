@@ -8,6 +8,8 @@ use App\Repositories\Contracts\AccountCardRepositoryInterface;
 use App\Repositories\Eloquent\AccountCardRepository;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Eloquent\CategoryRepository;
+use App\Repositories\Contracts\InstallmentPurchaseRepositoryInterface;
+use App\Repositories\Eloquent\InstallmentPurchaseRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AccountCardRepositoryInterface::class, AccountCardRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
+        $this->app->bind(InstallmentPurchaseRepositoryInterface::class, InstallmentPurchaseRepository::class);
     }
 
     /**

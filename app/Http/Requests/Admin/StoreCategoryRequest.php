@@ -16,7 +16,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name'  => ['required', 'string', 'max:255'],
-            'type'  => ['required', 'string', 'in:D,R']
+            'type'  => ['required', 'string', 'in:D,R'],
+            'icon'  => ['nullable', 'string']
         ];
     }
 
@@ -27,7 +28,8 @@ class StoreCategoryRequest extends FormRequest
             'name.string' => 'Informe um nome de categoria válido',
             'name.max' => 'Nome da categoria muito grande.',
             'type.required' => 'Informe o campo tipo',
-            'type.in' => 'Informe os tipo RECEITA ou DESPESA'
+            'type.in' => 'Informe os tipo RECEITA ou DESPESA',
+            'icon.string' => 'Ícone informado inválido'
         ];
     }
 }

@@ -47,6 +47,16 @@ class CategoryRepository implements CategoryRepositoryInterface
             ->take($limit)
             ->get();
 
+        $data->transform(function ($item) {
+            $item->type = match ($item->type) {
+                'D' => 'Despesa',
+                'R' => 'Receita',
+                default => $item->type
+            };
+
+            return $item;
+        });
+
         return [
             'data' => $data,
             'total' => $total
