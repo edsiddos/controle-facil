@@ -32,12 +32,8 @@ class AccountCardController extends Controller
         // Recupera o ID do usuário atualmente autenticado na sessão
         $userId = $request->user()->id;
 
-        // Renderiza o componente Vue/React em 'resources/js/Pages/Admin/AccountCard'
-        return Inertia::render('Admin/AccountCard/Index', [
-            'accounts' => $this->service->listAccounts($userId), // Busca as contas associadas ao usuário através da camada de serviço
-            'accountTypes' => AccountType::all(['id', 'name']),  // Retorna apenas as colunas necessárias dos tipos de conta para otimizar o payload
-            'typeCreditCard' => AccountCard::TYPE_CREDIT_CARD    // Busca o tipo correspondente a cartão de crédito
-        ]);
+        // Renderiza o componente Vue/React em 'resources/js/Pages/Admin/AccountCard/Index.vue'
+        return Inertia::render('Admin/AccountCard/Index');
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class InstallmentPurchase extends Model
 {
@@ -21,15 +22,18 @@ class InstallmentPurchase extends Model
         'purchase_date',
     ];
 
-    protected $casts = [
-        'purchase_date' => 'date',
-        'total_amount' => 'decimal:2',
-        'total_installments' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'purchase_date' => 'datetime:d/m/Y',
+            'total_amount' => 'decimal:2',
+            'total_installments' => 'integer',
+        ];
+    }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class)->onDelete('cascade');
+        return $this->belongsTo(User::class);
     }
 
     public function accountCard(): BelongsTo
@@ -45,5 +49,10 @@ class InstallmentPurchase extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'installment_purchase_id');
+    }
+
+    public function scopeForUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
     }
 }

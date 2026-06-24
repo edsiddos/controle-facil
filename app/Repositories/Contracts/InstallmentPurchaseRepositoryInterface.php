@@ -12,5 +12,5 @@ interface InstallmentPurchaseRepositoryInterface
     public function findById(int $id, int $userId): ?InstallmentPurchase;
     public function update(InstallmentPurchase $installmentPurchase, array $data): bool;
     public function delete(InstallmentPurchase $installmentPurchase): bool;
-    public function listWebTable(int $userId): array;
+    public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array;
 }

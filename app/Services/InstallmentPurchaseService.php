@@ -13,11 +13,6 @@ class InstallmentPurchaseService
 
     public function __construct(protected InstallmentPurchaseRepositoryInterface $repository) {}
 
-    public function listForUser(int $userId): array
-    {
-        return $this->repository->listWebTable($userId);
-    }
-
     public function storePurchase(array $data, int $userId): InstallmentPurchase
     {
         return DB::transaction(function () use ($data, $userId) {
@@ -44,9 +39,9 @@ class InstallmentPurchaseService
                     'installment_purchase_id' => $purchase->id,
                     'description' => "{$purchase->description} ({$i}/{$purchase->total_installments})",
                     'amount' => $installmentAmount,
-                    'due_date' => $baseDate->copy()->addMonths($i - 1),
-                    'status' => 'pending', // pendente de pagamento
-                    'type' => 'expense'
+                    'transaction_date' => $baseDate->copy()->addMonths($i - 1)->format('Y-m-d'),
+                    'status' => 'A PAGAR',
+                    'is_recurring' => false
                 ]);
             }
 
@@ -60,8 +55,6 @@ class InstallmentPurchaseService
         if (!$purchase) return false;
 
         return DB::transaction(function () use ($purchase, $data) {
-            // Nota: Em sistemas financeiros complexos, alterar o valor de uma compra parcelada 
-            // exige recalcular as transações pendentes. Para simplificar, atualizamos os dados cadastrais.
             return $this->repository->update($purchase, $data);
         });
     }

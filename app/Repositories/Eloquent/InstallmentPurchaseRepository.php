@@ -5,6 +5,10 @@ namespace App\Repositories\Eloquent;
 use App\Models\InstallmentPurchase;
 use App\Repositories\Contracts\InstallmentPurchaseRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+<<<<<<< HEAD
+=======
+use Carbon\Carbon;
+>>>>>>> f2b1e5a9b5b21ad1f403020152ceca67e381a87c
 
 class InstallmentPurchaseRepository implements InstallmentPurchaseRepositoryInterface
 {
@@ -18,6 +22,10 @@ class InstallmentPurchaseRepository implements InstallmentPurchaseRepositoryInte
 
     public function create(array $data): InstallmentPurchase
     {
+<<<<<<< HEAD
+=======
+        $data['purchase_date'] = Carbon::createFromFormat('d/m/Y', $data['purchase_date'])->format('Y-m-d');
+>>>>>>> f2b1e5a9b5b21ad1f403020152ceca67e381a87c
         return InstallmentPurchase::create($data);
     }
 
@@ -28,6 +36,10 @@ class InstallmentPurchaseRepository implements InstallmentPurchaseRepositoryInte
 
     public function update(InstallmentPurchase $installmentPurchase, array $data): bool
     {
+<<<<<<< HEAD
+=======
+        $data['purchase_date'] = Carbon::createFromFormat('d/m/Y', $data['purchase_date'])->format('Y-m-d');
+>>>>>>> f2b1e5a9b5b21ad1f403020152ceca67e381a87c
         return $installmentPurchase->update($data);
     }
 
@@ -36,6 +48,7 @@ class InstallmentPurchaseRepository implements InstallmentPurchaseRepositoryInte
         return $installmentPurchase->delete();
     }
 
+<<<<<<< HEAD
     public function listWebTable(int $userId): array
     {
         $purchases = $this->getAllPaginated($userId);
@@ -62,3 +75,43 @@ class InstallmentPurchaseRepository implements InstallmentPurchaseRepositoryInte
         ];
     }
 }
+=======
+    /**
+     * Consulta, filtra, pagina e formata as categorias para renderização de tabelas na web.
+     * @param int $userId Identificador do usuário para delimitar o escopo da busca.
+     * @param int $limit Limite de registros por página.
+     * @param int $offset Deslocamento inicial da consulta.
+     * @param string|null $search Termo opcional para busca textual no nome da categoria.
+     * @return array Retorna uma estrutura com 'data' (coleção formatada) e 'total' (contagem geral).
+     */
+    public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array
+    {
+        $query = InstallmentPurchase::forUser($userId);
+
+        $query->when($search, function ($q) use ($search) {
+            return $q->where('name', 'like', '%' . $search . '%');
+        });
+
+        $total = $query->count();
+
+        $data = $query->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $data->transform(function ($item) {
+            $item->type = match ($item->type) {
+                'D' => 'Despesa',
+                'R' => 'Receita',
+                default => $item->type
+            };
+
+            return $item;
+        });
+
+        return [
+            'data' => $data,
+            'total' => $total
+        ];
+    }
+}
+>>>>>>> f2b1e5a9b5b21ad1f403020152ceca67e381a87c

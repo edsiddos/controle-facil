@@ -22,9 +22,7 @@ class InstallmentPurchaseController extends Controller
     public function index(Request $request): Response
     {
         $userId = $request->user()->id;
-        return Inertia::render('Admin/InstallmentPurchase/Index', [
-            'tableData' => $this->service->listForUser($userId)
-        ]);
+        return Inertia::render('Admin/InstallmentPurchase/Index');
     }
 
     public function webTable(Request $request): \Illuminate\Http\JsonResponse

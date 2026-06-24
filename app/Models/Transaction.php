@@ -23,22 +23,16 @@ class Transaction extends Model
         'installment_purchase_id',
         'description',
         'amount',
-        'due_date',
-        'status',
-        'type',
+        'transaction_date',
         'is_recurring',
+        'installment_number',
+        'status'
     ];
 
-    /**
-     * Os atributos que devem ser convertidos para tipos nativos.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'amount' => 'decimal:2',
-        'due_date' => 'date',
-        'is_recurring' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return ['transaction_date' => 'datetime:d/m/Y'];
+    }
 
     /**
      * RELACIONAMENTO: Uma transação pertence a um Usuário.

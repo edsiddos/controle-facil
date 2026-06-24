@@ -181,7 +181,7 @@ onMounted(() => {
                         </td>
                     </tr>
 
-                    <tr v-if="webDataTable.length === 0 && !loading">
+                    <tr v-if="typeof webDataTable == 'undefined' ||  (webDataTable.length === 0 && !loading)">
                         <td :colspan="props.body.length + (props.actions ? 1 : 0)"
                             class="px-6 py-10 text-center text-sm text-gray-500">
                             Nenhum registro encontrado.
