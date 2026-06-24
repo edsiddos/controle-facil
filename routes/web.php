@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class);
 
     Route::get('installment-purchases/web-table', [InstallmentPurchaseController::class, 'webTable'])->name('installment-purchases.web-table');
-    Route::resource('installment-purchases', InstallmentPurchaseController::class);
+    Route::resource('installment-purchases', InstallmentPurchaseController::class)->parameters(['installment-purchases' => 'purchase']);
 });
 
 require __DIR__ . '/auth.php';
