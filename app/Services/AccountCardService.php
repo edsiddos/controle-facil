@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Class AccountCardService
- * * Camada de serviço responsável por centralizar as regras de negócio
+ * Camada de serviço responsável por centralizar as regras de negócio
  * relacionadas a contas e cartões dos usuários.
  */
 class AccountCardService
@@ -27,17 +27,6 @@ class AccountCardService
     public function __construct(AccountCardRepositoryInterface $repository)
     {
         $this->repository = $repository;
-    }
-
-    /**
-     * Lista todas as contas e cartões associados a um usuário específico.
-     *
-     * @param int $userId ID do usuário logado.
-     * @return Collection Lista de modelos AccountCard.
-     */
-    public function listAccounts(int $userId): Collection
-    {
-        return $this->repository->getAllForUser($userId);
     }
 
     /**
