@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 
 /**
  * Classe AccountCardRepository
- * * Camada de abstração para manipulação dos dados dos cartões de conta (AccountCard).
+ * Camada de abstração para manipulação dos dados dos cartões de conta (AccountCard).
  * Implementa a interface correspondente para garantir o desacoplamento do ORM Eloquent.
  */
 class AccountCardRepository implements AccountCardRepositoryInterface
