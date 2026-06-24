@@ -38,4 +38,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(AccountCard::class);
     }
+
+    public function installmentPurchase(): HasMany
+    {
+        return $this->hasManu(InstallmentPurchase::class);
+    }
 }
