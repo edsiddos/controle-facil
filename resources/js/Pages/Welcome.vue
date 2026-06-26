@@ -12,7 +12,7 @@ defineProps({
     
     <div class="min-h-screen bg-gray-50 flex flex-col">
         <div class="banner-dev">
-            ⚠️ Modo de Testes Ativo: O sistema ControleFácil encontra-se em fase de desenvolvimento.
+            ⚠️ O sistema ControleFácil encontra-se em fase de desenvolvimento.
         </div>
 
         <header class="w-full max-w-7xl mx-auto px-6 py-4 flex justify-between items-center bg-white rounded-xl shadow-sm mt-2 border border-gray-200">

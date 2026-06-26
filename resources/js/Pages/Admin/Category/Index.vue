@@ -47,7 +47,7 @@ const closeModal = () => {
         <template #toolbar>
             <Link :href="route('categories.create')"
                 class="bg-blue-600 text-white px-4 py-2 rounded shadow text-sm font-medium">
-                + Nova Categoria
+                🗂️ Nova Categoria
             </Link>
         </template>
 

@@ -25,7 +25,7 @@ const submit = () => {
 
     <div class="auth-wrapper flex-col">
         <div class="banner-dev w-full max-w-md mx-4">
-            ⚠️ Ambiente de Desenvolvimento Seguro
+            ⚠️ O sistema ControleFácil encontra-se em fase de desenvolvimento.
         </div>
 
         <div class="auth-card">
