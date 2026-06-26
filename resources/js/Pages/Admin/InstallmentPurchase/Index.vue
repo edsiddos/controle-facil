@@ -47,7 +47,7 @@ const closeModal = () => {
         <template #toolbar>
             <Link :href="route('installment-purchases.create')"
                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 dynamic-button">
-                + Nova Compra
+                🛍️ Nova Compra
             </Link>
         </template>
 
@@ -59,7 +59,6 @@ const closeModal = () => {
                     <WebTable ref="tableRef" :headers="tableHeaders" :body="tableBodyFields"
                         link="installment-purchases.web-table" :actions="true" edit-route="installment-purchases.edit"
                         @delete="openDeleteModal" />
-
                 </div>
             </div>
         </div>
@@ -67,6 +66,7 @@ const closeModal = () => {
         <Modal :show="showDeleteModalStatus" @close="closeModal" max-width="md">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900">Tem certeza que deseja excluir esta compra parcelada?</h2>
+                <p class="mt-1 text-sm text-gray-600">Esta ação não poderá ser desfeita.</p>
                 <div class="mt-6 flex justify-end gap-3">
                     <SecondaryButton @click="closeModal">Cancelar</SecondaryButton>
                     <DangerButton @click="deleteCategory">Sim, Excluir</DangerButton>

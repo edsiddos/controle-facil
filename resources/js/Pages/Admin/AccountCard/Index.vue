@@ -52,7 +52,7 @@ const closeModal = () => {
         <template #toolbar>
             <Link :href="route('accounts.create')"
                 class="bg-blue-600 text-white px-4 py-2 rounded shadow text-sm font-medium">
-                + Novo Cartão / Conta
+                💳 Novo Cartão / Conta
             </Link>
         </template>
 

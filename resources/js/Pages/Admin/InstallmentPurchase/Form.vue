@@ -58,6 +58,5 @@ defineProps({
             <InputError :message="form.errors.purchase_date" />
         </div>
 
-        <slot name="buttons"></slot>
     </div>
 </template>
