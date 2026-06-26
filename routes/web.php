@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\Admin\AccountCardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InstallmentPurchaseController;
+use App\Http\Controllers\Admin\TransactionController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -35,6 +36,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('installment-purchases/web-table', [InstallmentPurchaseController::class, 'webTable'])->name('installment-purchases.web-table');
     Route::resource('installment-purchases', InstallmentPurchaseController::class)->parameters(['installment-purchases' => 'purchase']);
+
+    Route::get('transactions/web-table', [TransactionController::class, 'webTable'])->name('transactions.web-table');
+    Route::resource('transactions', TransactionController::class)->parameters(['transactions' => 'transaction']);
 });
 
 require __DIR__ . '/auth.php';
