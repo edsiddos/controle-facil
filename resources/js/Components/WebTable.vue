@@ -172,12 +172,14 @@ onMounted(() => {
                         </td>
 
                         <td v-if="props.actions" class="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-3">
-                            <Link :href="route(props.editRoute, data.id)" class="text-blue-600 hover:text-blue-900">
-                                Editar
-                            </Link>
-                            <button @click="emit('delete', data.id)" class="text-red-600 hover:text-red-900">
-                                Excluir
-                            </button>
+                            <slot name="actions" :row="data">
+                                <Link v-if="props.editRoute" :href="route(props.editRoute, data.id)" class="text-blue-600 hover:text-blue-900">
+                                    Editar
+                                </Link>
+                                <button @click="emit('delete', data.id)" class="text-red-600 hover:text-red-900">
+                                    Excluir
+                                </button>
+                            </slot>
                         </td>
                     </tr>
 
