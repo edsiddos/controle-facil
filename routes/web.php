@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AccountCardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InstallmentPurchaseController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\RecurringTransactionController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -39,6 +40,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('transactions/web-table', [TransactionController::class, 'webTable'])->name('transactions.web-table');
     Route::resource('transactions', TransactionController::class)->parameters(['transactions' => 'transaction']);
+
+    Route::get('recurring-transactions/web-table', [RecurringTransactionController::class, 'webTable'])->name('recurring-transactions.web-table');
+    Route::get('recurring-transactions', [RecurringTransactionController::class, 'index'])->name('recurring-transactions.index');
+    Route::post('recurring-transactions/{recurringTransaction}/cancel', [RecurringTransactionController::class, 'cancel'])->name('recurring-transactions.cancel');
 });
 
 require __DIR__ . '/auth.php';
