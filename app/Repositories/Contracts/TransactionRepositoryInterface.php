@@ -12,5 +12,6 @@ interface TransactionRepositoryInterface
     public function create(array $data): Transaction;
     public function update(Transaction $transaction, array $data): bool;
     public function delete(Transaction $transaction): bool;
+    public function deleteFutureTransactionsForRecurring(int $recurringTransactionId, string $fromDate): int;
     public function listWebTable(int $userId, int $limit, int $offset, ?string $search = null): array;
 }

@@ -70,6 +70,20 @@ class TransactionRepository implements TransactionRepositoryInterface
     }
 
     /**
+     * Remove as transações futuras vinculadas a uma transação recorrente cancelada.
+     *
+     * @param int $recurringTransactionId ID do plano/assinatura recorrente.
+     * @param string $fromDate Data a partir da qual as transações serão deletadas.
+     * @return int Quantidade de registros deletados.
+     */
+    public function deleteFutureTransactionsForRecurring(int $recurringTransactionId, string $fromDate): int
+    {
+        return Transaction::where('recurring_transaction_id', $recurringTransactionId)
+            ->whereDate('transaction_date', '>', $fromDate)
+            ->delete();
+    }
+
+    /**
      * Alimenta a estrutura de paginação e busca da WebTable no frontend.
      *
      * @param int $userId ID do dono dos registros.
