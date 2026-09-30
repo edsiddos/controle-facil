@@ -3,8 +3,12 @@
 namespace App\Services;
 
 use App\Repositories\Contracts\TransactionRepositoryInterface;
+use App\Repositories\Contracts\RecurringTransactionRepositoryInterface;
+use App\Jobs\GenerateRecurringTransactionsJob;
 use App\Models\Transaction;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 /**
  * Class TransactionService
@@ -12,17 +16,13 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  */
 class TransactionService
 {
-    protected TransactionRepositoryInterface $repository;
-
     /**
-     * Construtor injetando a interface do repositório correspondente.
-     *
-     * @param TransactionRepositoryInterface $repository
+     * Construtor injetando os repositórios necessários.
      */
-    public function __construct(TransactionRepositoryInterface $repository)
-    {
-        $this->repository = $repository;
-    }
+    public function __construct(
+        protected TransactionRepositoryInterface $repository,
+        protected RecurringTransactionRepositoryInterface $recurringRepository
+    ) {}
 
     /**
      * Trata as regras e delega a criação de transação ao repositório.
@@ -36,12 +36,36 @@ class TransactionService
         // Vincula obrigatoriamente a movimentação ao usuário logado
         $data['user_id'] = $userId;
 
-        // Regra de negócio implícita: Se não for recorrente, forçar nulo/zero para consistência
         if (empty($data['is_recurring'])) {
             $data['is_recurring'] = false;
         }
 
-        return $this->repository->create($data);
+        return DB::transaction(function () use ($userId, $data) {
+            $transaction = $this->repository->create($data);
+
+            if ($transaction->is_recurring) {
+                $startDate = $data['transaction_date'] ?? ($transaction->getRawOriginal('transaction_date') ?? $transaction->transaction_date);
+
+                $recurring = $this->recurringRepository->create([
+                    'user_id'            => $userId,
+                    'account_card_id'    => $transaction->account_card_id,
+                    'category_id'        => $transaction->category_id,
+                    'description'        => $transaction->description,
+                    'amount'             => $transaction->amount,
+                    'start_date'         => Carbon::parse($startDate)->format('Y-m-d'),
+                    'installment_number' => $transaction->installment_number,
+                    'status'             => 'ATIVO',
+                ]);
+
+                $this->repository->update($transaction, [
+                    'recurring_transaction_id' => $recurring->id,
+                ]);
+
+                GenerateRecurringTransactionsJob::dispatch($recurring->id);
+            }
+
+            return $transaction;
+        });
     }
 
     /**
