@@ -35,10 +35,10 @@ const showingNavigationDropdown = ref(false);
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
                         <span>📝</span> Transações
                     </Link>
-                    <a href="#"
+                    <Link :href="route('recurring-transactions.index')"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition">
-                        <span>📉</span> Despesas Fixas
-                    </a>
+                        <span>🔄</span> Transações Recorrentes
+                    </Link>
                 </nav>
             </div>
 
