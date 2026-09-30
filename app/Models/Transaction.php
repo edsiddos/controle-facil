@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * Os atributos que podem ser atribuídos em massa.
@@ -21,6 +22,7 @@ class Transaction extends Model
         'account_card_id',
         'category_id',
         'installment_purchase_id',
+        'recurring_transaction_id',
         'description',
         'amount',
         'transaction_date',
@@ -65,6 +67,14 @@ class Transaction extends Model
     public function installmentPurchase(): BelongsTo
     {
         return $this->belongsTo(InstallmentPurchase::class, 'installment_purchase_id');
+    }
+
+    /**
+     * RELACIONAMENTO: Uma transação pode estar vinculada a uma assinatura/plano recorrente.
+     */
+    public function recurringTransaction(): BelongsTo
+    {
+        return $this->belongsTo(RecurringTransaction::class, 'recurring_transaction_id');
     }
 
     /**
