@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTOs\Admin\InstallmentPurchaseDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreInstallmentPurchaseRequest;
 use App\Services\InstallmentPurchaseService;
@@ -48,7 +49,8 @@ class InstallmentPurchaseController extends Controller
 
     public function store(StoreInstallmentPurchaseRequest $request): RedirectResponse
     {
-        $this->service->storePurchase($request->validated(), Auth::id());
+        $dto = InstallmentPurchaseDTO::fromRequest($request);
+        $this->service->storePurchase($dto, Auth::id());
         return redirect()->route('installment-purchases.index')->with('success', 'Compra parcelada cadastrada com sucesso!');
     }
 
@@ -73,7 +75,8 @@ class InstallmentPurchaseController extends Controller
             abort(403, 'Acesso não autorizado.');
         }
 
-        $this->service->updatePurchase($purchase->id, Auth::id(), $request->validated());
+        $dto = InstallmentPurchaseDTO::fromRequest($request);
+        $this->service->updatePurchase($purchase->id, Auth::id(), $dto);
         return redirect()->route('installment-purchases.index')->with('success', 'Compra parcelada atualizada com sucesso!');
     }
 

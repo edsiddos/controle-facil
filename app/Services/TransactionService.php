@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\Admin\TransactionDTO;
 use App\Repositories\Contracts\TransactionRepositoryInterface;
 use App\Repositories\Contracts\RecurringTransactionRepositoryInterface;
 use App\Jobs\GenerateRecurringTransactionsJob;
@@ -28,23 +29,20 @@ class TransactionService
      * Trata as regras e delega a criação de transação ao repositório.
      *
      * @param int $userId ID do usuário executando a ação.
-     * @param array $data Dados tratados do Form Request.
+     * @param TransactionDTO|array $data Dados tratados do Form Request encapsulados em DTO ou array.
      * @return Transaction
      */
-    public function registerTransaction(int $userId, array $data): Transaction
+    public function registerTransaction(int $userId, TransactionDTO|array $data): Transaction
     {
-        // Vincula obrigatoriamente a movimentação ao usuário logado
-        $data['user_id'] = $userId;
+        $dto = $data instanceof TransactionDTO ? $data : TransactionDTO::fromArray($data, $userId);
+        $payload = $dto->toArray();
+        $payload['user_id'] = $userId;
 
-        if (empty($data['is_recurring'])) {
-            $data['is_recurring'] = false;
-        }
-
-        return DB::transaction(function () use ($userId, $data) {
-            $transaction = $this->repository->create($data);
+        return DB::transaction(function () use ($userId, $dto, $payload) {
+            $transaction = $this->repository->create($payload);
 
             if ($transaction->is_recurring) {
-                $startDate = $data['transaction_date'] ?? ($transaction->getRawOriginal('transaction_date') ?? $transaction->transaction_date);
+                $startDate = $dto->transactionDate ?? ($transaction->getRawOriginal('transaction_date') ?? $transaction->transaction_date);
 
                 $recurring = $this->recurringRepository->create([
                     'user_id'            => $userId,
@@ -73,19 +71,20 @@ class TransactionService
      *
      * @param int $id ID da transação pretendida.
      * @param int $userId ID do usuário requisitante.
-     * @param array $data Novos dados a serem inseridos.
+     * @param TransactionDTO|array $data Novos dados a serem inseridos via DTO ou array.
      * @return bool
      * @throws ModelNotFoundException
      */
-    public function updateTransaction(int $id, int $userId, array $data): bool
+    public function updateTransaction(int $id, int $userId, TransactionDTO|array $data): bool
     {
+        $dto = $data instanceof TransactionDTO ? $data : TransactionDTO::fromArray($data, $userId);
         $transaction = $this->repository->findForUser($id, $userId);
 
         if (!$transaction) {
             throw new ModelNotFoundException("Transação não encontrada ou acesso negado.");
         }
 
-        return $this->repository->update($transaction, $data);
+        return $this->repository->update($transaction, $dto->toArray());
     }
 
     /**

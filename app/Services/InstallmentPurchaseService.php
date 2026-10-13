@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\Admin\InstallmentPurchaseDTO;
 use App\Models\InstallmentPurchase;
 use App\Repositories\Contracts\InstallmentPurchaseRepositoryInterface;
 use App\Models\Transaction;
@@ -13,13 +14,16 @@ class InstallmentPurchaseService
 
     public function __construct(protected InstallmentPurchaseRepositoryInterface $repository) {}
 
-    public function storePurchase(array $data, int $userId): InstallmentPurchase
+    public function storePurchase(InstallmentPurchaseDTO|array $data, int $userId): InstallmentPurchase
     {
-        return DB::transaction(function () use ($data, $userId) {
-            $data['user_id'] = $userId;
+        $dto = $data instanceof InstallmentPurchaseDTO ? $data : InstallmentPurchaseDTO::fromArray($data, $userId);
+
+        return DB::transaction(function () use ($dto, $userId) {
+            $payload = $dto->toArray();
+            $payload['user_id'] = $userId;
 
             // 1. Cria a compra mãe
-            $purchase = $this->repository->create($data);
+            $purchase = $this->repository->create($payload);
 
             // 2. Desmembra as parcelas na tabela de transações
             $installmentAmount = round($purchase->total_amount / $purchase->total_installments, 2);
@@ -49,13 +53,14 @@ class InstallmentPurchaseService
         });
     }
 
-    public function updatePurchase(int $id, int $userId, array $data): bool
+    public function updatePurchase(int $id, int $userId, InstallmentPurchaseDTO|array $data): bool
     {
+        $dto = $data instanceof InstallmentPurchaseDTO ? $data : InstallmentPurchaseDTO::fromArray($data, $userId);
         $purchase = $this->repository->findById($id, $userId);
         if (!$purchase) return false;
 
-        return DB::transaction(function () use ($purchase, $data) {
-            return $this->repository->update($purchase, $data);
+        return DB::transaction(function () use ($purchase, $dto) {
+            return $this->repository->update($purchase, $dto->toArray());
         });
     }
 

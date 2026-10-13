@@ -1,4 +1,4 @@
-# Documentação Técnica e Arquitetural \- ControleFácil
+# Documentação Técnica e Arquitetural - ControleFácil
 
 ## 1. Visão Geral do Projeto
 
@@ -10,13 +10,13 @@ O **ControleFácil** é uma aplicação web moderna do tipo Single Page Applicat
 * **Front-end:** Vue.js 3, Inertia.js (Inertia 2.0), Tailwind CSS  
 * **Banco de Dados:** PostgreSQL (Produção/Docker), SQLite (Testes)  
 * **Infraestrutura:** Docker & Docker Compose  
-* **Padrões de Arquitetura:** SOA (Arquitetura Orientada a Serviços), SOLID, Repository Pattern e Form Requests.
+* **Padrões de Arquitetura:** SOA (Arquitetura Orientada a Serviços), SOLID, Repository Pattern, Form Requests e DTOs (Data Transfer Objects).
 
 ---
 
 ## 2. Análise Estrutural e Descrição dos Componentes
 
-### 2.1 Camada de Modelos (Domain / Models) \- `app/Models/`
+### 2.1 Camada de Modelos (Domain / Models) - `app/Models/`
 
 Têm como responsabilidade principal representar a Camada de Domínio e o Mapeamento Objeto-Relacional (ORM) via Eloquent. Em uma arquitetura sob os princípios SOA e SOLID como a deste projeto, os Models são mantidos enxutos (Thin Models). Eles não contêm a lógica de negócio (que fica nos `app/Services`) nem a orquestração de persistência/queries complexas (que fica nos `app/Repositories`).
 
@@ -51,39 +51,45 @@ Os relacionamentos definem como as tabelas do banco de dados se conectam estrutu
 2. **`HasMany` (Possui Muitos) - Relação 1 → N:** Indica que o registro atual é o pai e possui múltiplos registros filhos vinculados a ele em outra tabela. No projeto uma compra parcelada (`InstallmentPurchase`) **possui muitas** transações/parcelas (`Transaction`).
 3. **`HasOne` (Possui Um) - Relação 1 → 1:** Indica que o registro possui exatamente um registro associado em outra tabela. Um exemplo conceitual no projeto seria se o usuário tivesse um perfil estendido de preferências financeiras (`UserProfile`), o model `User` teria uma relação `hasOne(UserProfile::class)`.
 
-### 2.2 Camada de Repositórios (Repository Pattern) \- `app/Repositories/`
+---
+
+### 2.2 Camada de Repositórios (Repository Pattern) - `app/Repositories/`
 
 Responsável exclusivamente por abstrair e gerenciar o acesso ao banco de dados. Ela serve como uma ponte de comunicação entre a camada de negócios (Services) e o ORM (Eloquent/Models), garantindo que a forma como os dados são consultados ou persistidos fique completamente isolada das regras da aplicação.
 
 #### Principais Responsabilidades
 * **Abstração da Camada de Persistência (CRUD e Consultas):** Encapsula todas as operações diretas no banco de dados, tais como criação (create), atualização (update), remoção (delete), buscas por ID e listagens paginadas (paginateForUser).
-* Encapsulamento de Filtros e Carregamento de Relacionamentos: Isola a construção das consultas Eloquent, aplicando filtros de ordenação (orderBy), pesquisas e carregamento ansioso de relacionamentos.
-* Garantia de Isolamento dos Dados do Usuário (Multitenancy): Aplica os escopos de usuário (scopeForUser) nas consultas para garantir que a Service e o Controller só recebam registros pertencentes ao usuário autenticado.
-* Inversão de Dependência (Princípio "D" do SOLID): Desacopla as regras de negócio da ferramenta de banco de dados. As Services dependem de interfaces/contratos e não das implementações concretas do ORM.
+* **Encapsulamento de Filtros e Carregamento de Relacionamentos:** Isola a construção das consultas Eloquent, aplicando filtros de ordenação (orderBy), pesquisas e carregamento ansioso de relacionamentos.
+* **Garantia de Isolamento dos Dados do Usuário (Multitenancy):** Aplica os escopos de usuário (scopeForUser) nas consultas para garantir que a Service e o Controller só recebam registros pertencentes ao usuário autenticado.
+* **Inversão de Dependência (Princípio "D" do SOLID):** Desacopla as regras de negócio da ferramenta de banco de dados. As Services dependem de interfaces/contratos e não das implementações concretas do ORM.
 
 #### Estrutura dos Repositories no Projeto
 * A camada é dividida em duas subpastas principais:
-  * app/Repositories/Contracts/ (Interfaces):
-    * Definem o contrato/assinatura dos métodos que o repositório deve ter (ex: InstallmentPurchaseRepositoryInterface).
-    * Especificam o que a aplicação precisa fazer com os dados (ex: paginateForUser, create, findForUser, delete), sem expor código do Laravel ou SQL.
-  * app/Repositories/Eloquent/ (Implementações Concretas):
-    * Implementam as interfaces utilizando a sintaxe do ORM Eloquent (ex: InstallmentPurchaseRepository).
+  * `app/Repositories/Contracts/` (Interfaces):
+    * Definem o contrato/assinatura dos métodos que o repositório deve ter (ex: `InstallmentPurchaseRepositoryInterface`).
+    * Especificam o que a aplicação precisa fazer com os dados (ex: `paginateForUser`, `create`, `findForUser`, `delete`), sem expor código do Laravel ou SQL.
+  * `app/Repositories/Eloquent/` (Implementações Concretas):
+    * Implementam as interfaces utilizando a sintaxe do ORM Eloquent (ex: `InstallmentPurchaseRepository`).
     * É o único lugar do fluxo de negócio onde a sintaxe direta do Eloquent/Model é executada.
-* Injeção no Service Container (AppServiceProvider): No AppServiceProvider.php, cada interface é vinculada à sua classe concreta ($this->app->bind(...)). Se no futuro o banco de dados ou ORM mudar, basta criar uma nova implementação e alterar o binding no Provider, sem modificar uma linha da camada de Service ou dos Controllers.
+* **Injeção no Service Container (`AppServiceProvider`):** No `AppServiceProvider.php`, cada interface é vinculada à sua classe concreta (`$this->app->bind(...)`). Se no futuro o banco de dados ou ORM mudar, basta criar uma nova implementação e alterar o binding no Provider, sem modificar uma linha da camada de Service ou dos Controllers.
 
-### 2.3 Camada de Serviços (Business Logic / Service Layer) \- `app/Services/`
+---
 
-Atua como a Camada de Regras de Negócio e Lógica da Aplicação (SOA/SOLID). Sua principal responsabilidade é isolar toda a inteligência e orquestração de dados da aplicação, garantindo que os Controllers permaneçam enxutos (thin controllers) e desacoplados da camada de persistência.
+### 2.3 Camada de Serviços (Business Logic / Service Layer) - `app/Services/`
+
+Atua como a Camada de Regras de Negócio e Lógica da Aplicação (SOA/SOLID). Sua principal responsabilidade é isolar toda a inteligência e orquestração de dados da aplicação, garantindo que os Controllers permanecem enxutos (thin controllers) e desacoplados da camada de persistência.
 
 #### Principais Responsabilidades
-* **Centralizar a Regra de Negócio**: Processa cálculos complexos, validações de domínio e regras específicas de finanças antes de salvar ou manipular os dados.
-* **Orquestrar Transações de Banco de Dados (`DB::transaction`)**: Garante a atomicidade das operações. Se uma ação envolver múltiplos registros (como criar uma compra e gerar 12 parcelas de uma só vez), a Service assegura que tudo seja salvo ou revertido (rollback) em caso de falha.
-* **Intermediar Controllers e Repositórios**: Os Controllers recebem as requisições HTTP e apenas delegam as ações para a Service, que por sua vez se comunica com a camada de Repositórios (`app/Repositories/`) para consultar ou persistir dados no banco.
-* **Formatar Dados para a Interface (`WebTable`)**: Prepara a estrutura e os filtros das listagens paginadas antes de enviar as respostas para a tabela dinâmica do front-end Vue.js.
+* **Centralizar a Regra de Negócio:** Processa cálculos complexos, validações de domínio e regras específicas de finanças recebidas através dos DTOs antes de salvar ou manipular os dados.
+* **Orquestrar Transações de Banco de Dados (`DB::transaction`):** Garante a atomicidade das operações. Se uma ação envolver múltiplos registros (como criar uma compra parcelada e gerar 12 parcelas de uma só vez), a Service assegura que tudo seja salvo ou revertido (rollback) em caso de falha.
+* **Intermediar Controllers e Repositórios:** Os Controllers constroem o DTO e o repassam para a Service, que por sua vez envia o payload gerado via `$dto->toArray()` para a camada de Repositórios (`app/Repositories/`).
+* **Formatar Dados para a Interface (`WebTable`):** Prepara a estrutura e os filtros das listagens paginadas antes de enviar as respostas para a tabela dinâmica do front-end Vue.js.
 
-### 2.4 Camada de Validação (Requests) \- `app/Http/Requests/Admin/`
+---
 
-Os **Form Requests** (`app/Http/Requests/Admin/`) têm como responsabilidade principal atuar como a **Camada de Validação, Sanitização e Autorização das Requisições HTTP**. Eles interceptam a requisição assim que ela chega ao back-end, garantindo que apenas dados válidos, seguros e bem-formatados alcancem os Controllers e a camada de negócio (`Services`).
+### 2.4 Camada de Validação (Requests) - `app/Http/Requests/Admin/`
+
+Os **Form Requests** (`app/Http/Requests/Admin/`) têm como responsabilidade principal atuar como a **Camada de Validação, Sanitização e Autorização das Requisições HTTP**. Eles interceptam a requisição assim que ela chega ao back-end, garantindo que apenas dados válidos, seguros e bem-formatados alcancem os Controllers e os DTOs.
 
 #### Principais Responsabilidades
 * **Definição de Regras de Validação (`rules()`):** Especifica com precisão os critérios que cada parâmetro do formulário deve atender (presença obrigatória, tipos de dados, limites mínimos e máximos, formato de data, e verificação de existência no banco de dados via `exists`).
@@ -92,33 +98,84 @@ Os **Form Requests** (`app/Http/Requests/Admin/`) têm como responsabilidade pri
 * **Extração Segura de Dados (`validated()`):** Disponibiliza apenas os campos devidamente validados e autorizados através do método `$request->validated()`, impedindo ataques de injeção de parâmetros indesejados.
 * **Aplicação do Princípio de Responsabilidade Única (SRP / SOLID):** Desacopla completamente a lógica de validação do Controller e da Service, evitando `if/else` poluídos no fluxo principal do sistema.
 
-### 2.5 Camada de Controladores (Controllers) \- `app/Http/Controllers/Admin/`
+---
+
+### 2.5 Camada de Transferência de Dados (DTOs) - `app/DTOs/Admin/`
+
+Os **Data Transfer Objects (DTOs)** (`app/DTOs/Admin/`) atuam como a **Camada de Normalização, Tipagem Forte e Transporte de Dados** entre os Controllers/Form Requests e a Camada de Serviços (`Services`). Implementados com a sintaxe nativa do PHP 8.3 (`readonly class`), os DTOs garantem imutabilidade e eliminam a passagem de arrays não tipados soltos pelo sistema.
+
+#### Principais Responsabilidades
+* **Tipagem Forte e Imutabilidade:** Define explicitamente os tipos de cada atributo (`int`, `float`, `string`, `bool`), utilizando `readonly class` para evitar mutações acidentais durante a execução da requisição.
+* **Normalização e Sanitização de Dados:** Transforma dados brutos em formatos padronizados (ex: conversão de datas `d/m/Y` para o formato ISO `Y-m-d`, tratamento de limites de crédito para `available_limit`, aparo de strings com `trim`).
+* **Construtores de Conveniência (`fromRequest` e `fromArray`):** Permite instanciar o objeto diretamente a partir de uma instância de `FormRequest` ou de um `array` simples, facilitando tanto a execução em Controllers quanto em testes unitários.
+* **Exportação Estruturada para Persistência (`toArray`):** Mapeia os dados fortemente tipados de volta para o formato de array esperado pela camada de repositório e modelos Eloquent.
+
+Exemplo de DTO no Projeto (`CategoryDTO.php`):
+```php
+readonly class CategoryDTO
+{
+    public function __construct(
+        public string $name,
+        public string $type,
+        public ?string $icon = null,
+        public ?int $userId = null,
+    ) {}
+
+    public static function fromRequest(StoreCategoryRequest $request, ?int $userId = null): self
+    {
+        return self::fromArray($request->validated(), $userId ?? $request->user()?->id);
+    }
+
+    public static function fromArray(array $data, ?int $userId = null): self
+    {
+        return new self(
+            name: trim($data['name']),
+            type: $data['type'],
+            icon: $data['icon'] ?? null,
+            userId: $userId ?? ($data['user_id'] ?? null),
+        );
+    }
+
+    public function toArray(): array
+    {
+        $data = ['name' => $this->name, 'type' => $this->type, 'icon' => $this->icon];
+        if ($this->userId !== null) {
+            $data['user_id'] = $this->userId;
+        }
+        return $data;
+    }
+}
+```
+
+---
+
+### 2.6 Camada de Controladores (Controllers) - `app/Http/Controllers/Admin/`
 
 Os **Controllers** (`app/Http/Controllers/Admin/`) têm como responsabilidade principal atuar como **Orquestradores da Camada HTTP e Adaptadores de Resposta para o Front-end**. Seguindo a arquitetura SOA/SOLID adotada, os controllers do projeto são mantidos **extremamente enxutos (Thin Controllers)**. Eles não contêm lógica de validação (que fica nos Form Requests), lógica de negócio (que fica nos Services) nem consultas de banco de dados (que ficam nos Repositories).
 
 #### Principais Responsabilidades
 * **Receber a Requisição HTTP:** Recebem as requisições web enviadas pelo front-end Vue 3 / Inertia.js, já tratadas e validadas pelos Form Requests.
 * **Injeção de Dependência dos Serviços:** Utilizam a **Promoção de Propriedades do PHP 8** no construtor para injetar as classes de serviço necessárias (`InstallmentPurchaseService`, `AccountCardService`, `CategoryService`).
-* **Delegar a Execução para a Camada de Serviço (`Service`):** Repassam os dados validados (`$request->validated()`) e o ID do usuário autenticado (`$request->user()->id`) diretamente para os métodos da Service, sem processar regras internamente.
+* **Delegar a Execução para a Camada de Serviço (`Service`):** Instanciam o DTO correspondente via `DTO::fromRequest($request)` e repassam os dados fortemente tipados para a Service.
 * **Retornar Respostas Formatadas para o Front-end:**
   * **Inertia Views (`Inertia::render`):** Renderizam as telas da SPA (ex: `Index`, `Create`, `Edit`) injetando as props necessárias do Vue.
-  * **Respostas JSON:** Retornam dados paginados formatados em JSON para componentes dinâmicos, como o endpoint webTable.
-  * **Redirecionamentos com Flash Messages:** Redirecionam o usuário após ações de mutação (`store`, `update`, `destroy`) enviando mensagens de sucesso ou alerta (`with('success', ...)`).   
+  * **Respostas JSON:** Retornam dados paginados formatados em JSON para componentes dinâmicos, como o endpoint `webTable`.
+  * **Redirecionamentos com Flash Messages:** Redirecionam o usuário após ações de mutação (`store`, `update`, `destroy`) enviando mensagens de sucesso ou alerta (`with('success', ...)`).
 
-### 2.6 Camada Visual e Interface (Front-end Vue 3 / Inertia) \- `resources/js/`
+---
+
+### 2.7 Camada Visual e Interface (Front-end Vue 3 / Inertia) - `resources/js/`
 
 A camada visual e de interface baseada em **Vue 3** e **Inertia.js** desempenha um papel fundamental na experiência do usuário e na arquitetura do sistema.
 
 #### Importância da Camada Visual (Vue 3 / Inertia.js)
-* SPA Monolítica sem a Complexidade de uma API Separada:
+* **SPA Monolítica sem a Complexidade de uma API Separada:**
   * O Inertia.js permite criar uma Single Page Application (SPA) moderna sem a necessidade de construir uma API REST/GraphQL completa nem gerenciar estado de autenticação via tokens JWT no front-end.
   * O roteamento, validação e controle de acesso permanecem no Laravel, enquanto o front-end reage como um aplicativo de página única fluido e sem recarregamentos de página (page refreshes).
-
-* Reatividade e Produtividade com Vue 3 (Composition API / `<script setup>`):
+* **Reatividade e Produtividade com Vue 3 (Composition API / `<script setup>`):**
   * O Vue 3 garante que as alterações de dados (saldos, inserção de transações, parcelamentos) reflitam instantaneamente na interface.
   * O uso do hook `useForm` do Inertia sincroniza automaticamente os estados dos formulários, requisições HTTP, estados de carregamento (`form.processing`) e mensagens de validação do Laravel.
-
-* Consistência Visual e Reutilização de Código:
+* **Consistência Visual e Reutilização de Código:**
   * Integrada ao **Tailwind CSS**, a interface mantém um design responsivo, padronizado e limpo em todas as telas da aplicação.
 
 #### Descrição das Pastas e Componentes Front-End
@@ -133,17 +190,17 @@ A camada visual e de interface baseada em **Vue 3** e **Inertia.js** desempenha 
     * `PrimaryButton.vue` & `DangerButton.vue`: Botões com estilos visuais para ações primárias (salvar) e destrutivas (excluir).
     * `Modal.vue`: Janelas sobrepostas para confirmações de exclusão e diálogos com o usuário.
 
-2. layouts/ (resources/js/Layouts/)
+2. `layouts/ (resources/js/Layouts/)`
   * **O que é:** As molduras ou templates estruturais da aplicação.
   * **Responsabilidade:** Definir o esqueleto visual reutilizável que envolve o conteúdo das páginas, mantendo elementos persistentes (como cabeçalhos, barras de navegação, sidebars e menus de perfil) sem reconstruí-los a cada navegação.
   * **Layouts do Projeto:**
     * `AuthenticatedLayout.vue`: Layout da área protegida/administrativa. Contém o menu superior/lateral de navegação, dados do usuário logado, contêiner com slot principal (`<slot />`) e slot para o cabeçalho da página (`#header`).
     * `GuestLayout.vue`: Layout simplificado para telas públicas ou não autenticadas (como telas de Login, Registro e Redefinição de Senha).
 
-3. pages/admin/ (resources/js/Pages/Admin/)
+3. `pages/admin/ (resources/js/Pages/Admin/)`
   * **O que é:** As telas/páginas completas do sistema, organizadas por módulo dentro da área administrativa.
   * **Responsabilidade:** Representar as visões finais renderizadas pelo método `Inertia::render()` dos Controllers do Laravel. Cada página orquestra os componentes genéricos (`Components/`), envolve-se no layout adequado (`Layouts/`) e gerencia os dados enviados pelo back-end via props.
-  * Estrutura Interna por Módulo (ex: `InstallmentPurchase/`):
+  * **Estrutura Interna por Módulo (ex: `InstallmentPurchase/`):**
     * `Index.vue`: Tela principal do recurso. Exibe o título da página, botão para novo cadastro e a tabela dinâmica `<WebTable/>` integrada ao endpoint do controller.
     * `Form.vue`: Componente de formulário reutilizado tanto no cadastro quanto na edição. Contém os inputs, regras do `useForm` e tratamento das props (`cards`, `categories`).
     * `Create.vue`: Página que encapsula o `Form.vue` dentro do `AuthenticatedLayout.vue` para a criação de novos registros.
@@ -156,11 +213,10 @@ A camada visual e de interface baseada em **Vue 3** e **Inertia.js** desempenha 
 1. **Migration no Banco de Dados:** Criar a migração definindo os campos no esquema da tabela.  
 2. **Model Eloquent:** Configurar `$fillable`, relacionamentos e o escopo `scopeForUser`.  
 3. **Repository Pattern:** Definir a interface em `Contracts/` e a classe concreta em `Eloquent/`, vinculando-as no `AppServiceProvider`.
-4. **Service Provider:** Registrar o binding da interface do repositório com a implementação Eloquent.
-5. **Camada de Serviço (`Service`):** Implementar as regras de negócio e métodos de suporte para a `WebTable`.
-6. **Form Request:** Escrever as regras de validação e mensagens amigáveis em português.  
-7. **Controller Administrativo:** Injetar o Service, gerenciar o CRUD e retornar respostas `Inertia::render` ou `JsonResponse`.  
+4. **Form Request:** Escrever as regras de validação e mensagens amigáveis em português em `app/Http/Requests/Admin/`.  
+5. **Data Transfer Object (DTO):** Criar a `readonly class` em `app/DTOs/Admin/` com `fromRequest`, `fromArray` e `toArray`.  
+6. **Camada de Serviço (`Service`):** Implementar as regras de negócio aceitando o DTO e métodos de suporte para a `WebTable`.  
+7. **Controller Administrativo:** Injetar a Service, instanciar o DTO no `store`/`update` e retornar respostas `Inertia::render` ou `JsonResponse`.  
 8. **Rotas HTTP:** Mapear as rotas protegidas pelo middleware `auth` em `routes/web.php`.  
-9. **Front-end Vue 3 \+ Inertia:** Desenvolver a interface com `Index.vue` (WebTable), `Form.vue`, `Create.vue` e `Edit.vue`. 
-10. **Testes Automatizados:** Escrever os testes de Feature em `tests/Feature/Admin/`.
-
+9. **Front-end Vue 3 + Inertia:** Desenvolver a interface com `Index.vue` (WebTable), `Form.vue`, `Create.vue` e `Edit.vue`. 
+10. **Testes Automatizados:** Escrever os testes de DTOs e de Feature em `tests/Unit/DTOs/` e `tests/Feature/Admin/`.

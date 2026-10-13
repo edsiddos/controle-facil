@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\Admin\AccountCardDTO;
 use App\Repositories\Contracts\AccountCardRepositoryInterface;
 use App\Models\AccountCard;
 use Illuminate\Support\Collection;
@@ -33,22 +34,17 @@ class AccountCardService
      * Registra uma nova conta ou cartão para o usuário.
      *
      * @param int $userId ID do usuário que está criando a conta.
-     * @param array $data Dados da conta/cartão (nome, tipo, limite, etc).
+     * @param AccountCardDTO|array $data Dados da conta/cartão encapsulados via DTO ou array.
      * @return AccountCard O modelo criado e salvo no banco.
      */
-    public function registerAccount(int $userId, array $data): AccountCard
+    public function registerAccount(int $userId, AccountCardDTO|array $data): AccountCard
     {
-        // Vincula obrigatoriamente o registro ao usuário que fez a requisição
-        $data['user_id'] = $userId;
-
-        // Regra de negócio: Se o usuário informar um limite de crédito (é um cartão),
-        // o limite disponível inicial deve ser exatamente igual ao limite total definido.
-        if (isset($data['credit_limit'])) {
-            $data['available_limit'] = $data['credit_limit'];
-        }
+        $dto = $data instanceof AccountCardDTO ? $data : AccountCardDTO::fromArray($data, $userId);
+        $payload = $dto->toArray();
+        $payload['user_id'] = $userId;
 
         // Envia os dados tratados para o repositório persistir no banco de dados
-        return $this->repository->create($data);
+        return $this->repository->create($payload);
     }
 
     /**
@@ -56,12 +52,14 @@ class AccountCardService
      *
      * @param int $id ID da conta/cartão a ser atualizada.
      * @param int $userId ID do usuário dono do registro (garante segurança).
-     * @param array $data Novos dados a serem aplicados.
+     * @param AccountCardDTO|array $data Novos dados a serem aplicados via DTO ou array.
      * @return bool True em caso de sucesso.
      * @throws ModelNotFoundException Se o registro não existir ou não pertencer ao usuário.
      */
-    public function updateAccount(int $id, int $userId, array $data): bool
+    public function updateAccount(int $id, int $userId, AccountCardDTO|array $data): bool
     {
+        $dto = $data instanceof AccountCardDTO ? $data : AccountCardDTO::fromArray($data, $userId);
+
         // Busca o registro garantindo que ele pertença ao usuário logado (evita que um usuário altere dados de outro)
         $accountCard = $this->repository->findForUser($id, $userId);
 
@@ -70,7 +68,7 @@ class AccountCardService
         }
 
         // Executa a atualização no repositório
-        return $this->repository->update($accountCard, $data);
+        return $this->repository->update($accountCard, $dto->toArray());
     }
 
     /**

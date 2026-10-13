@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTOs\Admin\TransactionDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTransactionRequest;
 use App\Services\TransactionService;
@@ -63,7 +64,7 @@ class TransactionController extends Controller
         $userId = $request->user()->id;
 
         return Inertia::render('Admin/Transaction/Create', [
-            // Retorna apenas contas do próprio usuário logado para popular o select select
+            // Retorna apenas contas do próprio usuário logado para popular o select
             'accountCards' => AccountCard::forUser($userId)->get(['id', 'name']),
             'categories'   => Category::all(['id', 'name'])
         ]);
@@ -77,9 +78,11 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request): RedirectResponse
     {
+        $dto = TransactionDTO::fromRequest($request);
+
         $this->service->registerTransaction(
             $request->user()->id,
-            $request->validated()
+            $dto
         );
 
         return redirect()
@@ -120,7 +123,9 @@ class TransactionController extends Controller
             abort(403, 'Acesso não autorizado.');
         }
 
-        $this->service->updateTransaction($transaction->id, $request->user()->id, $request->validated());
+        $dto = TransactionDTO::fromRequest($request);
+
+        $this->service->updateTransaction($transaction->id, $request->user()->id, $dto);
 
         return redirect()
             ->route('transactions.index')

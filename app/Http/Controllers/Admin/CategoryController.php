@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTOs\Admin\CategoryDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Services\CategoryService;
@@ -53,7 +54,8 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        $this->service->registerCategory($request->user()->id, $request->validated());
+        $dto = CategoryDTO::fromRequest($request);
+        $this->service->registerCategory($request->user()->id, $dto);
 
         return redirect()
             ->route('categories.index')
@@ -90,7 +92,8 @@ class CategoryController extends Controller
         }
 
         try {
-            $this->service->updateCategory($category->id, $request->user()->id, $request->validated());
+            $dto = CategoryDTO::fromRequest($request);
+            $this->service->updateCategory($category->id, $request->user()->id, $dto);
             return redirect()->route('categories.index')->with('success', 'Categoria atualizada com sucesso!');
         } catch (\Exception $e) {
             return redirect()->route('categories.index')->with('error', $e->getMessage());

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\Admin\CategoryDTO;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Models\Category;
 use Illuminate\Support\Collection;
@@ -37,26 +38,31 @@ class CategoryService
     /**
      * Registra uma nova categoria vinculada ao usuário informado.
      * @param int $userId Identificador único do usuário dono da categoria.
-     * @param array $data Dados da categoria a ser criada (ex: nome, tipo, ícone).
+     * @param CategoryDTO|array $data Dados da categoria encapsulados via DTO ou array.
      * @return Category Retorna a instância do modelo Category criado.
      */
-    public function registerCategory(int $userId, array $data): Category
+    public function registerCategory(int $userId, CategoryDTO|array $data): Category
     {
-        $data['user_id'] = $userId;
-        return $this->repository->create($data);
+        $dto = $data instanceof CategoryDTO ? $data : CategoryDTO::fromArray($data, $userId);
+        $payload = $dto->toArray();
+        $payload['user_id'] = $userId;
+
+        return $this->repository->create($payload);
     }
 
     /**
      * Atualiza os dados de uma categoria específica de um usuário.
      * @param int $id Identificador único da categoria a ser modificada.
      * @param int $userId Identificador único do usuário que está solicitando a alteração.
-     * @param array $data Dados atualizados a serem aplicados.
+     * @param CategoryDTO|array $data Dados atualizados a serem aplicados via DTO ou array.
      * @throws ModelNotFoundException Lançada caso a categoria não seja encontrada para o usuário.
      * @throws \Exception Lançada se houver uma tentativa de alterar uma categoria global do sistema.
      * @return bool Retorna verdadeiro em caso de sucesso na atualização.
      */
-    public function updateCategory(int $id, int $userId, array $data): bool
+    public function updateCategory(int $id, int $userId, CategoryDTO|array $data): bool
     {
+        $dto = $data instanceof CategoryDTO ? $data : CategoryDTO::fromArray($data, $userId);
+
         $category = $this->repository->findForUser($id, $userId);
 
         if (!$category) {
@@ -68,7 +74,7 @@ class CategoryService
             throw new \Exception("Não é possível alterar uma categoria global do sistema.");
         }
 
-        return $this->repository->update($category, $data);
+        return $this->repository->update($category, $dto->toArray());
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTOs\Admin\AccountCardDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAccountCardRequest;
 use App\Services\AccountCardService;
@@ -73,10 +74,11 @@ class AccountCardController extends Controller
      */
     public function store(StoreAccountCardRequest $request): RedirectResponse
     {
-        // $request->validated() retorna apenas os campos que passaram com sucesso na validação do Request
+        $dto = AccountCardDTO::fromRequest($request);
+
         $this->service->registerAccount(
             $request->user()->id,
-            $request->validated()
+            $dto
         );
 
         // Redireciona o usuário de volta para a rota de listagem injetando uma mensagem flash na sessão
@@ -89,7 +91,7 @@ class AccountCardController extends Controller
      * Exibe a tela de edição de uma conta/cartão existente.
      * @param Request $request Objeto da requisição.
      * @param AccountCard $accountCard Uso de Route Model Binding: o Laravel busca o model no banco automaticamente usando o ID da URL.
-     * @return RedirectResponse Redirecionamento HTTP com feedback de sucesso ou erro.
+     * @return Response Renderização da view via Inertia.js.
      */
     public function edit(Request $request, AccountCard $accountCard): Response
     {
@@ -117,7 +119,9 @@ class AccountCardController extends Controller
             abort(403, 'Acesso não autorizado.');
         }
 
-        $this->service->updateAccount($accountCard->id, $request->user()->id, $request->validated());
+        $dto = AccountCardDTO::fromRequest($request);
+
+        $this->service->updateAccount($accountCard->id, $request->user()->id, $dto);
 
         return redirect()
             ->route('accounts.index')
